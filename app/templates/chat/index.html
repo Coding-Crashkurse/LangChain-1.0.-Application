@@ -1,0 +1,104 @@
+﻿{% extends "base.html" %}
+{% block title %}Chat{% endblock %}
+{% block content %}
+<div class="mb-4">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+      <h2 class="mb-0">Python explainer chat</h2>
+      <p class="text-muted mb-0">Thread ID: {{ thread_id }}</p>
+    </div>
+    {% if status_message %}
+    <span class="badge text-bg-info text-wrap shadow-sm">{{ status_message }}</span>
+    {% endif %}
+  </div>
+</div>
+<div class="chat-window mb-4">
+  {% for message in messages %}
+    {% set is_assistant = (message.role == 'assistant') %}
+    {% set is_pending = (message.approved is none) %}
+    {% set is_rejected = (message.approved is not none and message.approved is sameas(false)) %}
+    <div class="chat-card {{ 'assistant' if is_assistant else 'user' }}">
+      <div class="chat-card-header d-flex justify-content-between align-items-center">
+        <span class="badge rounded-pill {{ 'bg-primary-subtle text-primary' if is_assistant else 'bg-success-subtle text-success' }}">
+        {{ 'Bot' if is_assistant else 'You' }}
+      </span>
+      <small class="text-muted">{{ message.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+    </div>
+    <div class="chat-card-body">
+      {% if is_assistant and is_rejected %}
+      <details class="rejected-details">
+        <summary>Message rejected — click to view</summary>
+        <div class="chat-message mt-3" data-markdown='{{ message.content | tojson | safe }}'></div>
+      </details>
+      {% else %}
+      <div class="chat-message" data-markdown='{{ message.content | tojson | safe }}'></div>
+      {% endif %}
+      {% if is_assistant %}
+        {% if is_pending %}
+        <div class="mt-3 d-flex flex-wrap gap-2">
+          <form method="post" action="{{ url_for('chat.approve_message') }}" data-lock-form="true">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <input type="hidden" name="message_id" value="{{ message.id }}" />
+            <button class="btn btn-success btn-sm" type="submit">Approve</button>
+          </form>
+          <form method="post" action="{{ url_for('chat.reject_message') }}" class="d-flex gap-2" data-lock-form="true">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            <input type="hidden" name="message_id" value="{{ message.id }}" />
+            <input class="form-control form-control-sm" type="text" name="feedback" placeholder="Feedback" />
+            <button class="btn btn-danger btn-sm" type="submit">Reject</button>
+          </form>
+        </div>
+        {% elif message.approved %}
+        <span class="badge bg-success-subtle text-success border mt-3">Approved</span>
+        {% else %}
+        <span class="badge bg-danger-subtle text-danger border mt-3">Rejected</span>
+        {% if message.rejection_reason %}
+        <div class="small text-muted mt-1">Feedback: {{ message.rejection_reason }}</div>
+        {% endif %}
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<div class="card shadow-sm border-0 mb-5">
+  <div class="card-body">
+    <form method="post" data-lock-form="true">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <div class="mb-3">
+        <label for="message" class="form-label">Your question</label>
+        <textarea id="message" name="message" rows="3" class="form-control" placeholder="Ask anything about Python..." required></textarea>
+      </div>
+      <button class="btn btn-primary" type="submit" data-loading-text="Sending...">
+        <span class="btn-label">Send question</span>
+        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+      </button>
+    </form>
+  </div>
+</div>
+{% if pending_tools %}
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-header bg-white fw-semibold">Pending tool approvals</div>
+  <div class="card-body">
+    {% for tool in pending_tools %}
+    <div class="pb-3 mb-3 border-bottom">
+      <p class="mb-2"><strong>{{ tool.tool_name }}</strong> <span class="text-muted">— Args: {{ tool.args_json }}</span></p>
+      <div class="d-flex flex-wrap gap-2">
+        <form method="post" action="{{ url_for('chat.approve_tool') }}" data-lock-form="true">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="log_id" value="{{ tool.id }}" />
+          <button class="btn btn-outline-success btn-sm" type="submit">Approve</button>
+        </form>
+        <form method="post" action="{{ url_for('chat.reject_tool') }}" class="d-flex gap-2" data-lock-form="true">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="log_id" value="{{ tool.id }}" />
+          <input class="form-control form-control-sm" type="text" name="feedback" placeholder="Why?" />
+          <button class="btn btn-outline-danger btn-sm" type="submit">Reject</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,17 @@
+﻿.venv/
+__pycache__/
+instance/
+*.pyc
+*.pyo
+*.pyd
+*.db
+.env
+.env.local
+.DS_Store
+*.sqlite3
+.mypy_cache/
+pytest.cache/
+.coverage
+htmlcov/
+.cache/
+uv.lock

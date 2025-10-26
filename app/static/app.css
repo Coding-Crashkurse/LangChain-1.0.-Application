@@ -1,0 +1,130 @@
+﻿:root {
+  --bg-body: #eef2f7;
+  --gradient-start: #eff6ff;
+  --gradient-end: #fdf2ff;
+  --card-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
+  --assistant-bg: #fff8eb;
+  --user-bg: #eef5ff;
+}
+
+body {
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  min-height: 100vh;
+  color: #0f172a;
+}
+
+main.container {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 2rem;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 3rem;
+}
+
+.navbar {
+  background: #0f172a !important;
+}
+
+.btn-reset {
+  border-radius: 999px;
+  padding-inline: 1.25rem;
+}
+
+.chat-window {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+.chat-card {
+  border: none;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--card-shadow);
+}
+
+.chat-card.assistant {
+  background: var(--assistant-bg);
+  border-left: 5px solid #facc15;
+}
+
+.chat-card.user {
+  background: var(--user-bg);
+  border-left: 5px solid #3b82f6;
+}
+
+.chat-card-header .badge {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.chat-card-body {
+  margin-top: 0.5rem;
+}
+
+.chat-message p {
+  margin-bottom: 0.75rem;
+}
+
+.chat-message pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  overflow-x: auto;
+  font-size: 0.9rem;
+}
+
+.chat-message code {
+  background: rgba(15, 23, 42, 0.08);
+  border-radius: 6px;
+  padding: 0.1rem 0.35rem;
+}
+
+.chat-message ul,
+.chat-message ol {
+  padding-left: 1.25rem;
+}
+
+.rejected-details {
+  border: 1px dashed rgba(220, 38, 38, 0.4);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  background: rgba(248, 113, 113, 0.08);
+}
+
+.rejected-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #b91c1c;
+}
+
+.rejected-details[open] {
+  background: rgba(248, 113, 113, 0.15);
+}
+
+.card {
+  border-radius: 16px;
+}
+
+.badge.text-bg-info {
+  background: rgba(14, 165, 233, 0.1) !important;
+  color: #0369a1 !important;
+}
+
+.alert {
+  border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+  main.container {
+    padding: 1.25rem;
+  }
+
+  .chat-card {
+    padding: 1.1rem;
+  }
+}
